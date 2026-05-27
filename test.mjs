@@ -1,7 +1,7 @@
 async function test() {
-  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=AIzaSyCCijIw3xdaK6RfFYG01kJ8kyZGdQ0XY58";
+  const url = "http://localhost:3000/api/chat";
   const body = {
-    contents: [{ parts: [{ text: "hello" }] }]
+    messages: [{ sender: "user", text: "hello" }]
   };
   try {
     const res = await fetch(url, {

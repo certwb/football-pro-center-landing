@@ -1,8 +1,4 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
-
-// Initialize the API with the key from environment variables
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY as string);
 
 export async function POST(req: Request) {
   try {
@@ -28,35 +24,38 @@ Football Pro Center - Ақтаудағы алғашқы кешенді кәсі�
 
 Қолданушыларға сыпайы және қазақ тілінде жауап беріңіз. Егер сұрақ күрделі болса немесе брондау керек болса, WhatsApp арқылы хабарласуды ұсыныңыз.`;
 
-    const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-flash",
-      systemInstruction: systemPrompt,
+    // Map messages to OpenAI/xAI format
+    const formattedMessages = messages.map((msg: any) => ({
+      role: msg.sender === "user" ? "user" : "assistant",
+      content: msg.text,
+    }));
+
+    // Prepend system message
+    formattedMessages.unshift({
+      role: "system",
+      content: systemPrompt,
     });
 
-    let formattedHistory: any[] = [];
-    for (const msg of messages.slice(0, -1)) {
-      const role = msg.sender === "user" ? "user" : "model";
-      
-      // History must start with 'user'
-      if (formattedHistory.length === 0 && role === "model") {
-        continue;
-      }
-      
-      // History must alternate
-      if (formattedHistory.length > 0 && formattedHistory[formattedHistory.length - 1].role === role) {
-        formattedHistory[formattedHistory.length - 1].parts[0].text += "\n" + msg.text;
-      } else {
-        formattedHistory.push({ role, parts: [{ text: msg.text }] });
-      }
+    const response = await fetch("https://api.x.ai/v1/chat/completions", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": `Bearer ${process.env.GEMINI_API_KEY}`,
+      },
+      body: JSON.stringify({
+        model: "grok-beta",
+        messages: formattedMessages,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error("xAI API error:", errorText);
+      throw new Error("Failed to fetch from xAI");
     }
 
-    const chat = model.startChat({
-      history: formattedHistory,
-    });
-
-    const latestMessage = messages[messages.length - 1].text;
-    const result = await chat.sendMessage(latestMessage);
-    const responseText = result.response.text();
+    const data = await response.json();
+    const responseText = data.choices[0].message.content;
 
     return NextResponse.json({ text: responseText });
   } catch (error) {
