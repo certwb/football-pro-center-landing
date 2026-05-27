@@ -761,7 +761,7 @@ export default function HomePage() {
             {[
               { name: "Кәсіби бутсылар", price: "45 000 тг", image: "https://images.unsplash.com/photo-1606107557195-0e29a4b5b4aa?auto=format&fit=crop&q=80" },
               { name: "Ресми матч доптары", price: "25 000 тг", image: "https://images.unsplash.com/photo-1614632537423-1e6c2e7e0aab?auto=format&fit=crop&q=80" },
-              { name: "Жаттығу формасы", price: "15 000 тг", image: "https://images.unsplash.com/photo-1580087433276-a0104f2913db?auto=format&fit=crop&q=80" }
+              { name: "Жаттығу формасы", price: "15 000 тг", image: "/football-uniform.png" }
             ].map((product, index) => (
               <motion.div
                 key={index}
