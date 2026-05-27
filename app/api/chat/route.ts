@@ -29,7 +29,7 @@ Football Pro Center - Ақтаудағы алғашқы кешенді кәсі�
 Қолданушыларға сыпайы және қазақ тілінде жауап беріңіз. Егер сұрақ күрделі болса немесе брондау керек болса, WhatsApp арқылы хабарласуды ұсыныңыз.`;
 
     const model = genAI.getGenerativeModel({
-      model: "gemini-1.5-flash",
+      model: "gemini-2.5-flash",
       systemInstruction: systemPrompt,
     });
 
