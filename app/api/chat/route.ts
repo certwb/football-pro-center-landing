@@ -55,7 +55,20 @@ Football Pro Center - Ақтаудағы алғашқы кешенді кәсі�
     });
 
     const latestMessage = messages[messages.length - 1].text;
-    const result = await chat.sendMessage(latestMessage);
+    
+    let result;
+    try {
+      result = await chat.sendMessage(latestMessage);
+    } catch (e: any) {
+      if (e.status === 503) {
+        console.log("Got 503, retrying once...");
+        await new Promise(r => setTimeout(r, 1000));
+        result = await chat.sendMessage(latestMessage);
+      } else {
+        throw e;
+      }
+    }
+    
     const responseText = result.response.text();
 
     return NextResponse.json({ text: responseText });
